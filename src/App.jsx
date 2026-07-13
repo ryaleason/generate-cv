@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { pdf } from '@react-pdf/renderer'
-import { FileDown, RotateCcw, FileText, ChevronDown, ChevronUp, Eye, Globe } from 'lucide-react'
+import { FileDown, RotateCcw, FileText, ChevronDown, ChevronUp, Eye, EyeOff, Globe, Monitor, Smartphone } from 'lucide-react'
 import PersonalInfoForm from './components/form/PersonalInfoForm'
 import ExperienceForm from './components/form/ExperienceForm'
 import EducationForm from './components/form/EducationForm'
@@ -23,6 +23,8 @@ function InstagramIcon({ className }) {
 function App() {
   const store = useResumeStore()
   const [exporting, setExporting] = useState(false)
+  const [viewMode, setViewMode] = useState('desktop')
+  const [showPreview, setShowPreview] = useState(false)
   const [expandedSections, setExpandedSections] = useState({
     template: true,
     personal: true,
@@ -79,7 +81,7 @@ function App() {
   ]
 
   return (
-    <div className="min-h-screen min-w-[1100px] bg-slate-100">
+    <div className={`min-h-screen bg-slate-100 ${viewMode === 'desktop' ? 'min-w-[1100px]' : ''}`}>
       {/* Top Bar */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
@@ -91,6 +93,45 @@ function App() {
           </div>
 
           <div className="flex items-center gap-2">
+            <div className="lg:hidden flex items-center rounded-lg bg-slate-100 p-0.5">
+              <button
+                type="button"
+                onClick={() => setViewMode('desktop')}
+                aria-pressed={viewMode === 'desktop'}
+                className={`flex items-center gap-1 px-2 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
+                  viewMode === 'desktop' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500'
+                }`}
+              >
+                <Monitor className="w-3.5 h-3.5" />
+                Desktop
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setViewMode('mobile')
+                  setShowPreview(false)
+                }}
+                aria-pressed={viewMode === 'mobile'}
+                className={`flex items-center gap-1 px-2 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
+                  viewMode === 'mobile' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500'
+                }`}
+              >
+                <Smartphone className="w-3.5 h-3.5" />
+                Mobile
+              </button>
+            </div>
+
+            {viewMode === 'mobile' && (
+              <button
+                type="button"
+                onClick={() => setShowPreview((current) => !current)}
+                className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
+              >
+                {showPreview ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                {showPreview ? 'Editor' : 'Preview'}
+              </button>
+            )}
+
             <button
               onClick={handleReset}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors cursor-pointer"
@@ -143,9 +184,9 @@ function App() {
 
       {/* Main Layout */}
       <main className="max-w-[1600px] mx-auto px-4 sm:px-6 py-6">
-        <div className="flex flex-row gap-6">
+        <div className={`flex gap-6 ${viewMode === 'desktop' ? 'flex-row' : 'flex-col'}`}>
           {/* Left Panel - Form Editor */}
-          <div className="w-[480px] shrink-0 space-y-4">
+          <div className={`${viewMode === 'desktop' ? 'w-[480px] shrink-0' : 'w-full'} space-y-4 ${viewMode === 'mobile' && showPreview ? 'hidden' : ''}`}>
             {sections.map(({ key, component }) => (
               <div key={key} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <button
@@ -183,7 +224,7 @@ function App() {
           </div>
 
           {/* Right Panel - Preview */}
-          <div className="flex-1 min-w-0">
+          <div className={`flex-1 min-w-0 ${viewMode === 'mobile' && !showPreview ? 'hidden' : ''}`}>
             <div className="sticky top-20">
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-sm font-medium text-slate-500 flex items-center gap-1.5">
