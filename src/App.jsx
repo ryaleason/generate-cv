@@ -69,9 +69,6 @@ function App() {
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center">
-              <FileText className="w-4 h-4 text-white" />
-            </div>
             <div>
               <h1 className="text-sm font-bold text-slate-800 leading-tight">ATS-ResumeBuilder</h1>
               <p className="text-[10px] text-slate-400 leading-tight">Harvard-Style CV Generator</p>
