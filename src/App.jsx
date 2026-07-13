@@ -70,8 +70,8 @@ function App() {
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div>
-              <h1 className="text-sm font-bold text-slate-800 leading-tight">ATS-ResumeBuilder</h1>
-              <p className="text-[10px] text-slate-400 leading-tight">Harvard-Style CV Generator</p>
+              <h1 className="text-sm font-bold text-slate-800 leading-tight">ResumeBuilder</h1>
+              <p className="text-[10px] text-slate-400 leading-tight">Gausa bingung ngedit cv</p>
             </div>
           </div>
 
