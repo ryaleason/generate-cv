@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { pdf } from '@react-pdf/renderer'
-import { FileDown, RotateCcw, FileText, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react'
+import { FileDown, RotateCcw, FileText, ChevronDown, ChevronUp, Eye, EyeOff, Globe } from 'lucide-react'
 import PersonalInfoForm from './components/form/PersonalInfoForm'
 import ExperienceForm from './components/form/ExperienceForm'
 import EducationForm from './components/form/EducationForm'
@@ -9,6 +9,16 @@ import TemplateForm from './components/form/TemplateForm'
 import ResumePreview from './components/preview/ResumePreview'
 import ResumePDFDocument from './components/pdf/ResumePDFDocument'
 import useResumeStore from './store/useResumeStore'
+
+function InstagramIcon({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className} aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
 
 function App() {
   const store = useResumeStore()
@@ -121,7 +131,10 @@ function App() {
             rel="noreferrer"
             className="font-medium text-slate-600 hover:text-slate-900 transition-colors"
           >
-            Instagram @ryaleason_
+            <span className="inline-flex items-center gap-1">
+              <InstagramIcon className="w-3.5 h-3.5" />
+              Instagram @ryaleason_
+            </span>
           </a>
           <span className="text-slate-300">•</span>
           <a
@@ -130,7 +143,10 @@ function App() {
             rel="noreferrer"
             className="font-medium text-slate-600 hover:text-slate-900 transition-colors"
           >
-            gabrialfitrah.dev
+            <span className="inline-flex items-center gap-1">
+              <Globe className="w-3.5 h-3.5" />
+              gabrialfitrah.dev
+            </span>
           </a>
         </p>
       </div>
