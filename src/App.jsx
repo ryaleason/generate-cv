@@ -5,6 +5,7 @@ import PersonalInfoForm from './components/form/PersonalInfoForm'
 import ExperienceForm from './components/form/ExperienceForm'
 import EducationForm from './components/form/EducationForm'
 import SkillsForm from './components/form/SkillsForm'
+import TemplateForm from './components/form/TemplateForm'
 import ResumePreview from './components/preview/ResumePreview'
 import ResumePDFDocument from './components/pdf/ResumePDFDocument'
 import useResumeStore from './store/useResumeStore'
@@ -14,6 +15,7 @@ function App() {
   const [exporting, setExporting] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [expandedSections, setExpandedSections] = useState({
+    template: true,
     personal: true,
     experience: true,
     education: true,
@@ -27,17 +29,20 @@ function App() {
   const handleExportPDF = useCallback(async () => {
     setExporting(true)
     try {
+      // Read the latest Zustand snapshot so the exported PDF always uses the
+      // template, photo, and form values currently shown in the preview.
+      const currentStore = useResumeStore.getState()
       const data = {
-        personalInfo: store.personalInfo,
-        experiences: store.experiences,
-        educations: store.educations,
-        skills: store.skills,
+        personalInfo: currentStore.personalInfo,
+        experiences: currentStore.experiences,
+        educations: currentStore.educations,
+        skills: currentStore.skills,
       }
       const blob = await pdf(<ResumePDFDocument data={data} />).toBlob()
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `${store.personalInfo.fullName || 'Resume'}_CV.pdf`
+      a.download = `${currentStore.personalInfo.fullName || 'Resume'}_CV.pdf`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
@@ -48,7 +53,7 @@ function App() {
     } finally {
       setExporting(false)
     }
-  }, [store])
+  }, [])
 
   const handleReset = () => {
     if (window.confirm('Apakah Anda yakin ingin menghapus semua data? Tindakan ini tidak dapat dibatalkan.')) {
@@ -57,6 +62,7 @@ function App() {
   }
 
   const sections = [
+    { key: 'template', component: <TemplateForm /> },
     { key: 'personal', component: <PersonalInfoForm /> },
     { key: 'experience', component: <ExperienceForm /> },
     { key: 'education', component: <EducationForm /> },
@@ -141,6 +147,7 @@ function App() {
                   className="w-full px-5 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer"
                 >
                   <span className="text-sm font-medium text-slate-700">
+                    {key === 'template' && 'Pilih Template CV'}
                     {key === 'personal' && 'Data Pribadi'}
                     {key === 'experience' && 'Pengalaman Kerja'}
                     {key === 'education' && 'Pendidikan'}

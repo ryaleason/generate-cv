@@ -1,4 +1,4 @@
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer'
+import { Document, Page, Text, View, Image, StyleSheet } from '@react-pdf/renderer'
 
 const styles = StyleSheet.create({
   page: {
@@ -14,18 +14,28 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     marginBottom: 4,
   },
+  photo: {
+    width: 60,
+    height: 60,
+    objectFit: 'cover',
+    borderRadius: 30,
+    alignSelf: 'center',
+    marginBottom: 6,
+  },
   name: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#1e293b',
     textTransform: 'uppercase',
     letterSpacing: 1.5,
-    marginBottom: 2,
+    lineHeight: 1.25,
+    marginBottom: 4,
   },
   jobTitle: {
     fontSize: 10,
     color: '#475569',
-    marginBottom: 6,
+    lineHeight: 1.25,
+    marginBottom: 8,
     letterSpacing: 0.5,
   },
   contactRow: {
@@ -120,40 +130,72 @@ function formatDate(dateStr) {
   return `${months[parseInt(month, 10) - 1]} ${year}`
 }
 
+function normalizeSummary(text) {
+  return text.replace(/\s+/g, ' ').trim()
+}
+
+const sectionLabels = {
+  en: {
+    summary: 'Professional Summary',
+    experience: 'Work Experience',
+    education: 'Education',
+    skills: 'Skills',
+  },
+  id: {
+    summary: 'Ringkasan Profil',
+    experience: 'Pengalaman Kerja',
+    education: 'Pendidikan',
+    skills: 'Keahlian',
+  },
+}
+
 export default function ResumePDFDocument({ data }) {
   const { personalInfo, experiences, educations, skills } = data
+  const template = personalInfo.template || 'classic'
+  const photoShape = personalInfo.photoShape || 'circle'
+  const labels = sectionLabels[personalInfo.language || 'en']
+  const theme = {
+    classic: { primary: '#1e293b', secondary: '#475569', border: '#cbd5e1', headerBorder: '2pt solid #1e293b', align: 'center' },
+    modern: { primary: '#1d4ed8', secondary: '#2563eb', border: '#bfdbfe', headerBorder: '4pt solid #2563eb', align: 'left' },
+    minimal: { primary: '#44403c', secondary: '#78716c', border: '#d6d3d1', headerBorder: '1pt solid #a8a29e', align: 'center' },
+  }[template]
+  const accentColor = personalInfo.accentColor || theme.primary
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Header */}
         {personalInfo.fullName && (
-          <View style={styles.headerContainer}>
-            <Text style={styles.name}>{personalInfo.fullName}</Text>
-            {personalInfo.jobTitle && (
-              <Text style={styles.jobTitle}>{personalInfo.jobTitle}</Text>
-            )}
-            <View style={styles.contactRow}>
-              {personalInfo.email && <Text>{personalInfo.email}</Text>}
-              {personalInfo.phone && <Text>{personalInfo.phone}</Text>}
-              {personalInfo.location && <Text>{personalInfo.location}</Text>}
-              {personalInfo.linkedin && <Text>{personalInfo.linkedin}</Text>}
+          <View style={[styles.headerContainer, { borderBottom: `${template === 'modern' ? 4 : template === 'minimal' ? 1 : 2}pt solid ${accentColor}`, textAlign: theme.align, flexDirection: template === 'modern' ? 'row' : 'column', alignItems: template === 'modern' ? 'center' : undefined }]}>
+            <View style={template === 'modern' ? { flex: 1 } : undefined}>
+              {template !== 'modern' && personalInfo.photo && <Image src={personalInfo.photo} style={[styles.photo, { alignSelf: 'center', borderRadius: photoShape === 'circle' ? 30 : 0 }]} />}
+              <Text style={[styles.name, { color: template === 'modern' ? accentColor : theme.primary }]}>{personalInfo.fullName}</Text>
+              {personalInfo.jobTitle && (
+                <Text style={[styles.jobTitle, { color: template === 'modern' ? accentColor : theme.secondary }]}>{personalInfo.jobTitle}</Text>
+              )}
+              <View style={[styles.contactRow, { justifyContent: theme.align === 'center' ? 'center' : 'flex-start' }]}>
+                {personalInfo.email && <Text>{personalInfo.email}</Text>}
+                {personalInfo.phone && <Text>{personalInfo.phone}</Text>}
+                {personalInfo.location && <Text>{personalInfo.location}</Text>}
+                {personalInfo.linkedin && <Text>{personalInfo.linkedin}</Text>}
+              </View>
             </View>
+            {template === 'modern' && personalInfo.photo && <Image src={personalInfo.photo} style={[styles.photo, { marginBottom: 0, marginLeft: 12, borderRadius: photoShape === 'circle' ? 30 : 0 }]} />}
           </View>
         )}
 
         {/* Summary */}
         {personalInfo.summary && (
           <View>
-            <Text style={styles.sectionTitle}>Professional Summary</Text>
-            <Text style={styles.summary}>{personalInfo.summary}</Text>
+            <Text style={[styles.sectionTitle, { color: accentColor, borderBottomColor: accentColor }]}>{labels.summary}</Text>
+            <Text style={styles.summary}>{normalizeSummary(personalInfo.summary)}</Text>
           </View>
         )}
 
         {/* Experience */}
         {experiences.some(e => e.company || e.position) && (
           <View>
-            <Text style={styles.sectionTitle}>Work Experience</Text>
+            <Text style={[styles.sectionTitle, { color: accentColor, borderBottomColor: accentColor }]}>{labels.experience}</Text>
             {experiences.filter(e => e.company || e.position).map((exp) => (
               <View key={exp.id} style={styles.entryContainer}>
                 <View style={styles.entryHeader}>
@@ -179,7 +221,7 @@ export default function ResumePDFDocument({ data }) {
         {/* Education */}
         {educations.some(e => e.institution || e.degree) && (
           <View>
-            <Text style={styles.sectionTitle}>Education</Text>
+            <Text style={[styles.sectionTitle, { color: accentColor, borderBottomColor: accentColor }]}>{labels.education}</Text>
             {educations.filter(e => e.institution || e.degree).map((edu) => (
               <View key={edu.id} style={styles.entryContainer}>
                 <View style={styles.entryHeader}>
@@ -199,7 +241,7 @@ export default function ResumePDFDocument({ data }) {
         {/* Skills */}
         {skills.some(s => s.items) && (
           <View>
-            <Text style={styles.sectionTitle}>Skills</Text>
+            <Text style={[styles.sectionTitle, { color: accentColor, borderBottomColor: accentColor }]}>{labels.skills}</Text>
             <View style={styles.skillsGrid}>
               {skills.filter(s => s.items).map((skill) => (
                 <View key={skill.id} style={styles.skillItem}>

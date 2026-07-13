@@ -7,8 +7,32 @@ function formatDate(dateStr) {
   return `${months[parseInt(month, 10) - 1]} ${year}`
 }
 
+const sectionLabels = {
+  en: {
+    summary: 'Professional Summary',
+    experience: 'Work Experience',
+    education: 'Education',
+    skills: 'Skills',
+  },
+  id: {
+    summary: 'Ringkasan Profil',
+    experience: 'Pengalaman Kerja',
+    education: 'Pendidikan',
+    skills: 'Keahlian',
+  },
+}
+
 export default function ResumePreview() {
   const { personalInfo, experiences, educations, skills } = useResumeStore()
+  const template = personalInfo.template || 'classic'
+  const photoShape = personalInfo.photoShape || 'circle'
+  const labels = sectionLabels[personalInfo.language || 'en']
+  const theme = {
+    classic: { primary: '#1e293b', secondary: '#475569', border: '#cbd5e1', align: 'center', photo: 'mx-auto', headerBorder: '2px solid #1e293b' },
+    modern: { primary: '#1d4ed8', secondary: '#2563eb', border: '#bfdbfe', align: 'left', photo: '', headerBorder: '4px solid #2563eb' },
+    minimal: { primary: '#44403c', secondary: '#78716c', border: '#d6d3d1', align: 'center', photo: 'mx-auto grayscale', headerBorder: '1px solid #a8a29e' },
+  }[template]
+  const accentColor = personalInfo.accentColor || theme.primary
 
   const hasContent = personalInfo.fullName || personalInfo.summary ||
     experiences.some(e => e.company || e.position) ||
@@ -30,20 +54,29 @@ export default function ResumePreview() {
         <>
           {/* Header - Name & Contact */}
           {personalInfo.fullName && (
-            <div className="text-center mb-1" style={{ borderBottom: '2px solid #1e293b', paddingBottom: '12px' }}>
-              <h1 className="text-2xl font-bold tracking-wide" style={{ color: '#1e293b', margin: '0 0 2px 0', fontSize: '22pt', letterSpacing: '1px' }}>
-                {personalInfo.fullName.toUpperCase()}
-              </h1>
-              {personalInfo.jobTitle && (
-                <p className="text-sm" style={{ color: '#475569', margin: '2px 0 6px 0', fontSize: '10pt', letterSpacing: '0.5px' }}>
-                  {personalInfo.jobTitle}
-                </p>
+            <div className={`mb-1 ${theme.align === 'center' ? 'text-center' : 'text-left'} ${template === 'modern' ? 'flex items-center gap-4' : ''}`} style={{ borderBottom: `${template === 'modern' ? 4 : template === 'minimal' ? 1 : 2}px solid ${accentColor}`, paddingBottom: '12px' }}>
+              {personalInfo.photo && (
+                <img
+                  src={personalInfo.photo}
+                  alt={`Foto ${personalInfo.fullName}`}
+                  className={`w-20 h-20 ${photoShape === 'circle' ? 'rounded-full' : 'rounded-none'} object-cover mb-2 ${template === 'modern' ? 'order-2 shrink-0 mb-0' : theme.photo}`}
+                />
               )}
-              <div className="flex flex-wrap justify-center gap-x-4 gap-y-1" style={{ fontSize: '9pt', color: '#64748b' }}>
-                {personalInfo.email && <span>{personalInfo.email}</span>}
-                {personalInfo.phone && <span>{personalInfo.phone}</span>}
-                {personalInfo.location && <span>{personalInfo.location}</span>}
-                {personalInfo.linkedin && <span>{personalInfo.linkedin}</span>}
+              <div className={template === 'modern' ? 'flex-1 min-w-0' : ''}>
+                <h1 className="text-2xl font-bold tracking-wide" style={{ color: template === 'modern' ? accentColor : theme.primary, margin: '0 0 2px 0', fontSize: '22pt', letterSpacing: '1px' }}>
+                  {personalInfo.fullName.toUpperCase()}
+                </h1>
+                {personalInfo.jobTitle && (
+                  <p className="text-sm" style={{ color: template === 'modern' ? accentColor : theme.secondary, margin: '2px 0 6px 0', fontSize: '10pt', letterSpacing: '0.5px' }}>
+                    {personalInfo.jobTitle}
+                  </p>
+                )}
+                <div className={`flex flex-wrap gap-x-4 gap-y-1 ${theme.align === 'center' ? 'justify-center' : ''}`} style={{ fontSize: '9pt', color: '#64748b' }}>
+                  {personalInfo.email && <span>{personalInfo.email}</span>}
+                  {personalInfo.phone && <span>{personalInfo.phone}</span>}
+                  {personalInfo.location && <span>{personalInfo.location}</span>}
+                  {personalInfo.linkedin && <span>{personalInfo.linkedin}</span>}
+                </div>
               </div>
             </div>
           )}
@@ -51,8 +84,8 @@ export default function ResumePreview() {
           {/* Summary */}
           {personalInfo.summary && (
             <div style={{ marginTop: '14px' }}>
-              <h2 style={{ fontSize: '11pt', fontWeight: 'bold', color: '#1e293b', textTransform: 'uppercase', letterSpacing: '1.5px', borderBottom: '1px solid #cbd5e1', paddingBottom: '3px', marginBottom: '8px' }}>
-                Professional Summary
+              <h2 style={{ fontSize: '11pt', fontWeight: 'bold', color: accentColor, textTransform: 'uppercase', letterSpacing: '1.5px', borderBottom: `1px solid ${accentColor}`, paddingBottom: '3px', marginBottom: '8px' }}>
+                {labels.summary}
               </h2>
               <p style={{ fontSize: '10pt', lineHeight: '1.5', color: '#334155', textAlign: 'justify' }}>
                 {personalInfo.summary}
@@ -63,8 +96,8 @@ export default function ResumePreview() {
           {/* Experience */}
           {experiences.some(e => e.company || e.position) && (
             <div style={{ marginTop: '14px' }}>
-              <h2 style={{ fontSize: '11pt', fontWeight: 'bold', color: '#1e293b', textTransform: 'uppercase', letterSpacing: '1.5px', borderBottom: '1px solid #cbd5e1', paddingBottom: '3px', marginBottom: '8px' }}>
-                Work Experience
+              <h2 style={{ fontSize: '11pt', fontWeight: 'bold', color: accentColor, textTransform: 'uppercase', letterSpacing: '1.5px', borderBottom: `1px solid ${accentColor}`, paddingBottom: '3px', marginBottom: '8px' }}>
+                {labels.experience}
               </h2>
               {experiences.filter(e => e.company || e.position).map((exp) => (
                 <div key={exp.id} style={{ marginBottom: '10px' }}>
@@ -92,8 +125,8 @@ export default function ResumePreview() {
           {/* Education */}
           {educations.some(e => e.institution || e.degree) && (
             <div style={{ marginTop: '14px' }}>
-              <h2 style={{ fontSize: '11pt', fontWeight: 'bold', color: '#1e293b', textTransform: 'uppercase', letterSpacing: '1.5px', borderBottom: '1px solid #cbd5e1', paddingBottom: '3px', marginBottom: '8px' }}>
-                Education
+              <h2 style={{ fontSize: '11pt', fontWeight: 'bold', color: accentColor, textTransform: 'uppercase', letterSpacing: '1.5px', borderBottom: `1px solid ${accentColor}`, paddingBottom: '3px', marginBottom: '8px' }}>
+                {labels.education}
               </h2>
               {educations.filter(e => e.institution || e.degree).map((edu) => (
                 <div key={edu.id} style={{ marginBottom: '8px' }}>
@@ -116,8 +149,8 @@ export default function ResumePreview() {
           {/* Skills */}
           {skills.some(s => s.items) && (
             <div style={{ marginTop: '14px' }}>
-              <h2 style={{ fontSize: '11pt', fontWeight: 'bold', color: '#1e293b', textTransform: 'uppercase', letterSpacing: '1.5px', borderBottom: '1px solid #cbd5e1', paddingBottom: '3px', marginBottom: '8px' }}>
-                Skills
+              <h2 style={{ fontSize: '11pt', fontWeight: 'bold', color: accentColor, textTransform: 'uppercase', letterSpacing: '1.5px', borderBottom: `1px solid ${accentColor}`, paddingBottom: '3px', marginBottom: '8px' }}>
+                {labels.skills}
               </h2>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 24px' }}>
                 {skills.filter(s => s.items).map((skill) => (

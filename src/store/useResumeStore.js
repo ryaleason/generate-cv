@@ -10,6 +10,11 @@ const initialState = {
     location: '',
     linkedin: '',
     summary: '',
+    photo: '',
+    photoShape: 'circle',
+    template: 'classic',
+    accentColor: '',
+    language: 'en',
   },
   experiences: [
     {
@@ -48,6 +53,11 @@ const useResumeStore = create(
       updatePersonalInfo: (field, value) =>
         set((state) => ({
           personalInfo: { ...state.personalInfo, [field]: value },
+        })),
+
+      updateTemplate: (template) =>
+        set((state) => ({
+          personalInfo: { ...state.personalInfo, template },
         })),
 
       // Experience
