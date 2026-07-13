@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { pdf } from '@react-pdf/renderer'
-import { FileDown, RotateCcw, FileText, ChevronDown, ChevronUp, Eye, EyeOff, Globe } from 'lucide-react'
+import { FileDown, RotateCcw, FileText, ChevronDown, ChevronUp, Eye, Globe } from 'lucide-react'
 import PersonalInfoForm from './components/form/PersonalInfoForm'
 import ExperienceForm from './components/form/ExperienceForm'
 import EducationForm from './components/form/EducationForm'
@@ -23,7 +23,6 @@ function InstagramIcon({ className }) {
 function App() {
   const store = useResumeStore()
   const [exporting, setExporting] = useState(false)
-  const [showPreview, setShowPreview] = useState(false)
   const [expandedSections, setExpandedSections] = useState({
     template: true,
     personal: true,
@@ -80,7 +79,7 @@ function App() {
   ]
 
   return (
-    <div className="min-h-screen bg-slate-100">
+    <div className="min-h-screen min-w-[1100px] bg-slate-100">
       {/* Top Bar */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
@@ -92,15 +91,6 @@ function App() {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Mobile preview toggle */}
-            <button
-              onClick={() => setShowPreview(!showPreview)}
-              className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
-            >
-              {showPreview ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-              {showPreview ? 'Editor' : 'Preview'}
-            </button>
-
             <button
               onClick={handleReset}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors cursor-pointer"
@@ -153,9 +143,9 @@ function App() {
 
       {/* Main Layout */}
       <main className="max-w-[1600px] mx-auto px-4 sm:px-6 py-6">
-        <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-row gap-6">
           {/* Left Panel - Form Editor */}
-          <div className={`w-full lg:w-[480px] lg:shrink-0 space-y-4 ${showPreview ? 'hidden lg:block' : ''}`}>
+          <div className="w-[480px] shrink-0 space-y-4">
             {sections.map(({ key, component }) => (
               <div key={key} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <button
@@ -193,7 +183,7 @@ function App() {
           </div>
 
           {/* Right Panel - Preview */}
-          <div className={`flex-1 min-w-0 ${showPreview ? '' : 'hidden lg:block'}`}>
+          <div className="flex-1 min-w-0">
             <div className="sticky top-20">
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-sm font-medium text-slate-500 flex items-center gap-1.5">
