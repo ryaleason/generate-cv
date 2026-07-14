@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { pdf } from '@react-pdf/renderer'
+import { Analytics } from '@vercel/analytics/react'
 import { FileDown, RotateCcw, FileText, ChevronDown, ChevronUp, Eye, EyeOff, Globe, Monitor, Smartphone } from 'lucide-react'
 import PersonalInfoForm from './components/form/PersonalInfoForm'
 import ExperienceForm from './components/form/ExperienceForm'
@@ -240,6 +241,8 @@ function App() {
           </div>
         </div>
       </main>
+
+      <Analytics />
 
     </div>
   )
