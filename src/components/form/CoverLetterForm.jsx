@@ -50,8 +50,8 @@ export default function CoverLetterForm() {
         </div>
       </div>
 
-      {/* 1. Pengirim */}
-      <div className="space-y-4">
+      {/* 1. Pengirim — tampil di awal hanya pada template modern. */}
+      {coverLetterInfo.template !== 'biodata' && <div className="space-y-4">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
           <User className="w-5 h-5 text-blue-600" />
           <h3 className="font-semibold text-slate-800 text-sm">Informasi Pengirim</h3>
@@ -124,7 +124,7 @@ export default function CoverLetterForm() {
             />
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* 2. Detail Surat */}
       <div className="space-y-4">
@@ -173,66 +173,6 @@ export default function CoverLetterForm() {
           )}
         </div>
       </div>
-
-      {/* 2.5 Biodata & Lampiran Fields (Hanya untuk template Biodata) */}
-      {coverLetterInfo.template === 'biodata' && (
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
-            <FileText className="w-5 h-5 text-blue-600" />
-            <h3 className="font-semibold text-slate-800 text-sm">Data Biodata & Lampiran</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="flex items-center gap-1.5 text-xs font-medium text-slate-600 mb-1.5">
-                Tempat, Tanggal Lahir
-              </label>
-              <input
-                type="text"
-                value={coverLetterInfo.birthPlaceDate}
-                onChange={(e) => updateCoverLetterInfo('birthPlaceDate', e.target.value)}
-                placeholder="Bekasi, 15 Mei 1998"
-                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white"
-              />
-            </div>
-            <div>
-              <label className="flex items-center gap-1.5 text-xs font-medium text-slate-600 mb-1.5">
-                Jenis Kelamin
-              </label>
-              <input
-                type="text"
-                value={coverLetterInfo.gender}
-                onChange={(e) => updateCoverLetterInfo('gender', e.target.value)}
-                placeholder="Laki-laki / Perempuan"
-                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white"
-              />
-            </div>
-            <div>
-              <label className="flex items-center gap-1.5 text-xs font-medium text-slate-600 mb-1.5">
-                Pendidikan Terakhir
-              </label>
-              <input
-                type="text"
-                value={coverLetterInfo.lastEducation}
-                onChange={(e) => updateCoverLetterInfo('lastEducation', e.target.value)}
-                placeholder="S1 Teknik Industri"
-                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white"
-              />
-            </div>
-          </div>
-          <div>
-            <label className="flex items-center gap-1.5 text-xs font-medium text-slate-600 mb-1.5">
-              Daftar Lampiran (Tiap Baris Baru = 1 Lampiran)
-            </label>
-            <textarea
-              value={coverLetterInfo.attachments}
-              onChange={(e) => updateCoverLetterInfo('attachments', e.target.value)}
-              placeholder="Curriculum Vitae (CV)&#10;Fotokopi Ijazah Terakhir"
-              rows={6}
-              className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white resize-y"
-            />
-          </div>
-        </div>
-      )}
 
       {/* 3. Penerima Surat */}
       <div className="space-y-4">
@@ -320,7 +260,7 @@ export default function CoverLetterForm() {
               className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white resize-y"
             />
           </div>
-          <div>
+          {coverLetterInfo.template !== 'biodata' && <div>
             <label className="flex items-center gap-1.5 text-xs font-medium text-slate-600 mb-1.5">
               Paragraf Penutup (Paragraf 3)
             </label>
@@ -331,9 +271,62 @@ export default function CoverLetterForm() {
               rows={3}
               className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white resize-y"
             />
-          </div>
+          </div>}
         </div>
       </div>
+
+      {/* Pada template biodata, bagian ini mengikuti posisi setelah paragraf pengantar di preview. */}
+      {coverLetterInfo.template === 'biodata' && <>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
+            <User className="w-5 h-5 text-blue-600" />
+            <h3 className="font-semibold text-slate-800 text-sm">Biodata Pelamar</h3>
+          </div>
+          <p className="-mt-2 text-[11px] text-slate-400">Ditampilkan setelah paragraf pengantar biodata pada preview.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="flex text-xs font-medium text-slate-600 mb-1.5">Nama Lengkap</label>
+              <input type="text" value={coverLetterInfo.senderName} onChange={(e) => updateCoverLetterInfo('senderName', e.target.value)} placeholder="Galih Perdana" className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white" />
+              <label className="flex items-center gap-2 mt-2 cursor-pointer text-xs font-medium text-slate-600"><input type="checkbox" checked={coverLetterInfo.boldSenderName !== false} onChange={(e) => updateCoverLetterInfo('boldSenderName', e.target.checked)} className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500" />Tebalkan nama pada biodata & tanda tangan</label>
+              <label className="flex items-center gap-2 mt-1.5 cursor-pointer text-xs font-medium text-slate-600"><input type="checkbox" checked={!!coverLetterInfo.underlineSenderName} onChange={(e) => updateCoverLetterInfo('underlineSenderName', e.target.checked)} className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500" />Garis bawahi nama pada tanda tangan</label>
+            </div>
+            <div>
+              <label className="flex text-xs font-medium text-slate-600 mb-1.5">Tempat, Tanggal Lahir</label>
+              <input type="text" value={coverLetterInfo.birthPlaceDate} onChange={(e) => updateCoverLetterInfo('birthPlaceDate', e.target.value)} placeholder="Bekasi, 15 Mei 1998" className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white" />
+            </div>
+            <div>
+              <label className="flex text-xs font-medium text-slate-600 mb-1.5">Jenis Kelamin</label>
+              <input type="text" value={coverLetterInfo.gender} onChange={(e) => updateCoverLetterInfo('gender', e.target.value)} placeholder="Laki-laki / Perempuan" className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white" />
+            </div>
+            <div>
+              <label className="flex text-xs font-medium text-slate-600 mb-1.5">Alamat</label>
+              <input type="text" value={coverLetterInfo.senderAddress} onChange={(e) => updateCoverLetterInfo('senderAddress', e.target.value)} placeholder="Jl. Desa 123, Bekasi 45678" className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white" />
+            </div>
+            <div>
+              <label className="flex text-xs font-medium text-slate-600 mb-1.5">Pendidikan Terakhir</label>
+              <input type="text" value={coverLetterInfo.lastEducation} onChange={(e) => updateCoverLetterInfo('lastEducation', e.target.value)} placeholder="S1 Teknik Industri" className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white" />
+            </div>
+            <div>
+              <label className="flex text-xs font-medium text-slate-600 mb-1.5">No. Handphone</label>
+              <input type="tel" value={coverLetterInfo.senderPhone} onChange={(e) => updateCoverLetterInfo('senderPhone', e.target.value)} placeholder="+628xxxxxxxxxx" className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white" />
+            </div>
+            <div>
+              <label className="flex text-xs font-medium text-slate-600 mb-1.5">Email</label>
+              <input type="email" value={coverLetterInfo.senderEmail} onChange={(e) => updateCoverLetterInfo('senderEmail', e.target.value)} placeholder="galih.perdana@gmail.com" className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white" />
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-100 pb-2"><FileText className="w-5 h-5 text-blue-600" /><h3 className="font-semibold text-slate-800 text-sm">Lampiran</h3></div>
+          <div><label className="flex text-xs font-medium text-slate-600 mb-1.5">Daftar Lampiran <span className="ml-1 font-normal text-slate-400">(satu baris untuk satu lampiran)</span></label><textarea value={coverLetterInfo.attachments} onChange={(e) => updateCoverLetterInfo('attachments', e.target.value)} placeholder="Curriculum Vitae (CV)&#10;Fotokopi Ijazah Terakhir" rows={6} className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white resize-y" /></div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-100 pb-2"><FileText className="w-5 h-5 text-blue-600" /><h3 className="font-semibold text-slate-800 text-sm">Paragraf Penutup</h3></div>
+          <div><label className="flex text-xs font-medium text-slate-600 mb-1.5">Paragraf Penutup (Paragraf 3)</label><textarea value={coverLetterInfo.bodyParagraph3} onChange={(e) => updateCoverLetterInfo('bodyParagraph3', e.target.value)} placeholder="Terlampir bersama surat lamaran ini..." rows={3} className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white resize-y" /></div>
+        </div>
+      </>}
 
       {/* 5. Tanda Tangan */}
       <div className="space-y-4">
