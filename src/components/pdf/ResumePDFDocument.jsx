@@ -139,18 +139,20 @@ const sectionLabels = {
     summary: 'Professional Summary',
     experience: 'Work Experience',
     education: 'Education',
+    projects: 'Projects',
     skills: 'Skills',
   },
   id: {
     summary: 'Ringkasan Profil',
     experience: 'Pengalaman Kerja',
     education: 'Pendidikan',
+    projects: 'Proyek',
     skills: 'Keahlian',
   },
 }
 
 export default function ResumePDFDocument({ data }) {
-  const { personalInfo, experiences, educations, skills } = data
+  const { personalInfo, experiences, educations, projects = [], skills } = data
   const template = personalInfo.template || 'classic'
   const photoShape = personalInfo.photoShape || 'circle'
   const labels = sectionLabels[personalInfo.language || 'en']
@@ -233,6 +235,28 @@ export default function ResumePDFDocument({ data }) {
                 <Text style={styles.entryDetail}>
                   {edu.degree}{edu.field ? `, ${edu.field}` : ''}{edu.gpa ? ` — IPK: ${edu.gpa}` : ''}
                 </Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Projects */}
+        {projects.some(project => project.name) && (
+          <View>
+            <Text style={[styles.sectionTitle, { color: accentColor, borderBottomColor: accentColor }]}>{labels.projects}</Text>
+            {projects.filter(project => project.name).map((project) => (
+              <View key={project.id} style={styles.entryContainer}>
+                <View style={styles.entryHeader}>
+                  <View style={{ flexDirection: 'row', flex: 1 }}>
+                    <Text style={styles.entryTitle}>{project.name}</Text>
+                    {project.technologies && <Text style={styles.entryDetail}> · {project.technologies}</Text>}
+                  </View>
+                  <Text style={styles.entryDate}>{formatDate(project.startDate)}{project.startDate && project.endDate ? ' – ' : ''}{formatDate(project.endDate)}</Text>
+                </View>
+                {project.link && <Text style={styles.entryDetail}>{project.link}</Text>}
+                {project.description && project.description.split('\n').filter(line => line.trim()).map((line, i) => (
+                  <View key={i} style={styles.bulletItem}><Text style={styles.bullet}>•</Text><Text style={styles.bulletText}>{line.trim()}</Text></View>
+                ))}
               </View>
             ))}
           </View>

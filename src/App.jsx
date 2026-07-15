@@ -1,10 +1,11 @@
 import { useState, useCallback } from 'react'
 import { pdf } from '@react-pdf/renderer'
 import { Analytics } from '@vercel/analytics/react'
-import { FileDown, RotateCcw, FileText, ChevronDown, ChevronUp, Eye, EyeOff, Globe, Monitor, Smartphone } from 'lucide-react'
+import { FileDown, RotateCcw, ChevronDown, ChevronUp, Eye, EyeOff, Globe, Monitor, Smartphone } from 'lucide-react'
 import PersonalInfoForm from './components/form/PersonalInfoForm'
 import ExperienceForm from './components/form/ExperienceForm'
 import EducationForm from './components/form/EducationForm'
+import ProjectForm from './components/form/ProjectForm'
 import SkillsForm from './components/form/SkillsForm'
 import TemplateForm from './components/form/TemplateForm'
 import ResumePreview from './components/preview/ResumePreview'
@@ -31,6 +32,7 @@ function App() {
     personal: true,
     experience: true,
     education: true,
+    projects: true,
     skills: true,
   })
 
@@ -48,6 +50,7 @@ function App() {
         personalInfo: currentStore.personalInfo,
         experiences: currentStore.experiences,
         educations: currentStore.educations,
+        projects: currentStore.projects,
         skills: currentStore.skills,
       }
       const blob = await pdf(<ResumePDFDocument data={data} />).toBlob()
@@ -78,6 +81,7 @@ function App() {
     { key: 'personal', component: <PersonalInfoForm /> },
     { key: 'experience', component: <ExperienceForm /> },
     { key: 'education', component: <EducationForm /> },
+    { key: 'projects', component: <ProjectForm /> },
     { key: 'skills', component: <SkillsForm /> },
   ]
 
@@ -199,6 +203,7 @@ function App() {
                     {key === 'personal' && 'Data Pribadi'}
                     {key === 'experience' && 'Pengalaman Kerja'}
                     {key === 'education' && 'Pendidikan'}
+                    {key === 'projects' && 'Proyek'}
                     {key === 'skills' && 'Keahlian'}
                   </span>
                   {expandedSections[key] ? (

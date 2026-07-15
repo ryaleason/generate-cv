@@ -38,6 +38,17 @@ const initialState = {
       gpa: '',
     },
   ],
+  projects: [
+    {
+      id: crypto.randomUUID(),
+      name: '',
+      link: '',
+      technologies: '',
+      startDate: '',
+      endDate: '',
+      description: '',
+    },
+  ],
   skills: [
     { id: crypto.randomUUID(), category: 'Technical Skills', items: '' },
     { id: crypto.randomUUID(), category: 'Soft Skills', items: '' },
@@ -112,6 +123,33 @@ const useResumeStore = create(
       removeEducation: (id) =>
         set((state) => ({
           educations: state.educations.filter((edu) => edu.id !== id),
+        })),
+
+      // Projects
+      addProject: () =>
+        set((state) => ({
+          projects: [
+            ...state.projects,
+            {
+              id: crypto.randomUUID(),
+              name: '',
+              link: '',
+              technologies: '',
+              startDate: '',
+              endDate: '',
+              description: '',
+            },
+          ],
+        })),
+      updateProject: (id, field, value) =>
+        set((state) => ({
+          projects: state.projects.map((project) =>
+            project.id === id ? { ...project, [field]: value } : project
+          ),
+        })),
+      removeProject: (id) =>
+        set((state) => ({
+          projects: state.projects.filter((project) => project.id !== id),
         })),
 
       // Skills

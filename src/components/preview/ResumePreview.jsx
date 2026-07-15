@@ -12,18 +12,20 @@ const sectionLabels = {
     summary: 'Professional Summary',
     experience: 'Work Experience',
     education: 'Education',
+    projects: 'Projects',
     skills: 'Skills',
   },
   id: {
     summary: 'Ringkasan Profil',
     experience: 'Pengalaman Kerja',
     education: 'Pendidikan',
+    projects: 'Proyek',
     skills: 'Keahlian',
   },
 }
 
 export default function ResumePreview() {
-  const { personalInfo, experiences, educations, skills } = useResumeStore()
+  const { personalInfo, experiences, educations, projects = [], skills } = useResumeStore()
   const template = personalInfo.template || 'classic'
   const photoShape = personalInfo.photoShape || 'circle'
   const labels = sectionLabels[personalInfo.language || 'en']
@@ -37,6 +39,7 @@ export default function ResumePreview() {
   const hasContent = personalInfo.fullName || personalInfo.summary ||
     experiences.some(e => e.company || e.position) ||
     educations.some(e => e.institution || e.degree) ||
+    projects.some(project => project.name) ||
     skills.some(s => s.items)
 
   return (
@@ -141,6 +144,32 @@ export default function ResumePreview() {
                   <div style={{ fontSize: '9.5pt', color: '#334155' }}>
                     {edu.degree}{edu.field && `, ${edu.field}`}{edu.gpa && ` — IPK: ${edu.gpa}`}
                   </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Projects */}
+          {projects.some(project => project.name) && (
+            <div style={{ marginTop: '14px' }}>
+              <h2 style={{ fontSize: '11pt', fontWeight: 'bold', color: accentColor, textTransform: 'uppercase', letterSpacing: '1.5px', borderBottom: `1px solid ${accentColor}`, paddingBottom: '3px', marginBottom: '8px' }}>
+                {labels.projects}
+              </h2>
+              {projects.filter(project => project.name).map((project) => (
+                <div key={project.id} style={{ marginBottom: '10px' }}>
+                  <div className="flex justify-between items-baseline">
+                    <div>
+                      <span style={{ fontSize: '10.5pt', fontWeight: 'bold', color: '#1e293b' }}>{project.name}</span>
+                      {project.technologies && <span style={{ fontSize: '9.5pt', color: '#475569' }}> · {project.technologies}</span>}
+                      {project.link && <span style={{ fontSize: '9pt', color: '#64748b' }}> · {project.link}</span>}
+                    </div>
+                    <span style={{ fontSize: '9pt', color: '#64748b', whiteSpace: 'nowrap', flexShrink: 0 }}>{formatDate(project.startDate)}{project.startDate && project.endDate && ' – '}{formatDate(project.endDate)}</span>
+                  </div>
+                  {project.description && (
+                    <ul style={{ margin: '4px 0 0 0', paddingLeft: '18px', fontSize: '9.5pt', lineHeight: '1.5', color: '#334155' }}>
+                      {project.description.split('\n').filter(line => line.trim()).map((line, i) => <li key={i} style={{ marginBottom: '2px' }}>{line.trim()}</li>)}
+                    </ul>
+                  )}
                 </div>
               ))}
             </div>
