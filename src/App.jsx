@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { pdf } from '@react-pdf/renderer'
 import { Analytics } from '@vercel/analytics/react'
-import { FileDown, RotateCcw, ChevronDown, ChevronUp, Eye, EyeOff, Globe, Monitor, Smartphone } from 'lucide-react'
+import { FileDown, RotateCcw, ChevronDown, ChevronUp, Eye, EyeOff, Globe, Monitor, Smartphone, X } from 'lucide-react'
 import PersonalInfoForm from './components/form/PersonalInfoForm'
 import ExperienceForm from './components/form/ExperienceForm'
 import EducationForm from './components/form/EducationForm'
@@ -41,6 +41,12 @@ function App() {
       : 'desktop'
   )
   const [showPreview, setShowPreview] = useState(false)
+  const [showDesktopSiteGuide, setShowDesktopSiteGuide] = useState(() => {
+    if (typeof window === 'undefined') return false
+
+    const isChromeAndroid = /Android/i.test(navigator.userAgent) && /Chrome/i.test(navigator.userAgent) && !/Edg|OPR/i.test(navigator.userAgent)
+    return isChromeAndroid && !window.localStorage.getItem('desktop-site-guide-dismissed')
+  })
   const [expandedSections, setExpandedSections] = useState({
     template: true,
     personal: true,
@@ -52,6 +58,11 @@ function App() {
 
   const toggleSection = (section) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }))
+  }
+
+  const closeDesktopSiteGuide = () => {
+    window.localStorage.setItem('desktop-site-guide-dismissed', 'true')
+    setShowDesktopSiteGuide(false)
   }
 
   const handleExportPDF = useCallback(async () => {
@@ -315,6 +326,37 @@ function App() {
       </main>
 
       <Analytics />
+
+      {showDesktopSiteGuide && (
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-slate-950/45 p-4" role="dialog" aria-modal="true" aria-labelledby="desktop-site-guide-title">
+          <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Pengguna HP</p>
+                <h2 id="desktop-site-guide-title" className="mt-1 text-lg font-bold text-slate-800">Aktifkan tampilan desktop</h2>
+              </div>
+              <button type="button" onClick={closeDesktopSiteGuide} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 cursor-pointer" aria-label="Tutup panduan">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <p className="mt-3 text-sm leading-relaxed text-slate-600">
+              Agar area kerja lebih luas, aktifkan <strong>Situs desktop</strong> di Chrome terlebih dahulu.
+            </p>
+
+            <ol className="mt-4 space-y-3 text-sm text-slate-700">
+              <li className="flex gap-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-white">1</span><span>Buka menu <strong>titik tiga (⋮)</strong> di pojok kanan atas Chrome.</span></li>
+              <li className="flex gap-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-white">2</span><span>Ketuk atau centang <strong>Situs desktop</strong> / <strong>Desktop site</strong>.</span></li>
+              <li className="flex gap-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-white">3</span><span>Kembali ke halaman ini lalu <strong>muat ulang (refresh)</strong>.</span></li>
+            </ol>
+
+            <div className="mt-5 flex gap-3">
+              <button type="button" onClick={closeDesktopSiteGuide} className="flex-1 rounded-lg bg-slate-800 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700 cursor-pointer">Mengerti</button>
+              <button type="button" onClick={closeDesktopSiteGuide} className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 cursor-pointer">Tetap mobile</button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   )

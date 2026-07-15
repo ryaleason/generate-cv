@@ -231,7 +231,7 @@ export default function CoverLetterPreview() {
           {bodyParagraph3 && <p style={pdfLayout.paragraph}>{bodyParagraph3}</p>}
 
           {/* Closing & Signature (Bottom Right Aligned) */}
-          <div style={pdfLayout.closingRight} style={{ marginLeft: 'auto', width: '110pt'}}>
+          <div style={{ ...pdfLayout.closingRight, width: '110pt' }}>
             {closingSalutation && <p style={pdfLayout.closingSalutation}>{closingSalutation}</p>}
             
             {showSignature && signatureImage ? (
