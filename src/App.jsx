@@ -33,7 +33,13 @@ function App() {
   const coverLetterStore = useCoverLetterStore()
   const [activeTab, setActiveTab] = useState('cv') // 'cv' or 'cover-letter'
   const [exporting, setExporting] = useState(false)
-  const [viewMode, setViewMode] = useState('desktop')
+  // Use the mobile layout immediately on phones/tablets instead of first
+  // rendering the desktop canvas (which causes horizontal overflow).
+  const [viewMode, setViewMode] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches
+      ? 'mobile'
+      : 'desktop'
+  )
   const [showPreview, setShowPreview] = useState(false)
   const [expandedSections, setExpandedSections] = useState({
     template: true,
