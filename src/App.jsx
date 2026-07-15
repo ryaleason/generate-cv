@@ -12,6 +12,12 @@ import ResumePreview from './components/preview/ResumePreview'
 import ResumePDFDocument from './components/pdf/ResumePDFDocument'
 import useResumeStore from './store/useResumeStore'
 
+// Cover Letter (Surat Lamaran) components & store
+import CoverLetterForm from './components/form/CoverLetterForm'
+import CoverLetterPreview from './components/preview/CoverLetterPreview'
+import CoverLetterPDFDocument from './components/pdf/CoverLetterPDFDocument'
+import useCoverLetterStore from './store/useCoverLetterStore'
+
 function InstagramIcon({ className }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className} aria-hidden="true">
@@ -24,6 +30,8 @@ function InstagramIcon({ className }) {
 
 function App() {
   const store = useResumeStore()
+  const coverLetterStore = useCoverLetterStore()
+  const [activeTab, setActiveTab] = useState('cv') // 'cv' or 'cover-letter'
   const [exporting, setExporting] = useState(false)
   const [viewMode, setViewMode] = useState('desktop')
   const [showPreview, setShowPreview] = useState(false)
@@ -43,36 +51,52 @@ function App() {
   const handleExportPDF = useCallback(async () => {
     setExporting(true)
     try {
-      // Read the latest Zustand snapshot so the exported PDF always uses the
-      // template, photo, and form values currently shown in the preview.
-      const currentStore = useResumeStore.getState()
-      const data = {
-        personalInfo: currentStore.personalInfo,
-        experiences: currentStore.experiences,
-        educations: currentStore.educations,
-        projects: currentStore.projects,
-        skills: currentStore.skills,
+      if (activeTab === 'cv') {
+        const currentStore = useResumeStore.getState()
+        const data = {
+          personalInfo: currentStore.personalInfo,
+          experiences: currentStore.experiences,
+          educations: currentStore.educations,
+          projects: currentStore.projects,
+          skills: currentStore.skills,
+        }
+        const blob = await pdf(<ResumePDFDocument data={data} />).toBlob()
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${currentStore.personalInfo.fullName || 'Resume'}_CV.pdf`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+      } else {
+        const currentStore = useCoverLetterStore.getState()
+        const data = currentStore.coverLetterInfo
+        const blob = await pdf(<CoverLetterPDFDocument data={data} />).toBlob()
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `Surat_Lamaran_${data.senderName || 'Lengkap'}.pdf`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
       }
-      const blob = await pdf(<ResumePDFDocument data={data} />).toBlob()
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `${currentStore.personalInfo.fullName || 'Resume'}_CV.pdf`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
     } catch (err) {
       console.error('PDF export failed:', err)
       alert('Gagal mengekspor PDF. Silakan coba lagi.')
     } finally {
       setExporting(false)
     }
-  }, [])
+  }, [activeTab])
 
   const handleReset = () => {
     if (window.confirm('Apakah Anda yakin ingin menghapus semua data? Tindakan ini tidak dapat dibatalkan.')) {
-      store.resetAll()
+      if (activeTab === 'cv') {
+        store.resetAll()
+      } else {
+        coverLetterStore.resetAll()
+      }
     }
   }
 
@@ -90,10 +114,39 @@ function App() {
       {/* Top Bar */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3 sm:gap-6">
             <div>
               <h1 className="text-sm font-bold text-slate-800 leading-tight">ResumeBuilder</h1>
               <p className="text-[10px] text-slate-400 leading-tight">Gausa bingung ngedit cv</p>
+            </div>
+
+            <div className="flex items-center gap-1 border-l border-slate-200 pl-3 sm:pl-6 h-8">
+              <button
+                onClick={() => {
+                  setActiveTab('cv')
+                  setShowPreview(false)
+                }}
+                className={`px-2.5 py-1.5 text-[11px] sm:text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+                  activeTab === 'cv'
+                    ? 'bg-slate-100 text-slate-800'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                Buat CV
+              </button>
+              <button
+                onClick={() => {
+                  setActiveTab('cover-letter')
+                  setShowPreview(false)
+                }}
+                className={`px-2.5 py-1.5 text-[11px] sm:text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+                  activeTab === 'cover-letter'
+                    ? 'bg-slate-100 text-slate-800'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                Surat Lamaran
+              </button>
             </div>
           </div>
 
@@ -192,33 +245,39 @@ function App() {
         <div className={`flex gap-6 ${viewMode === 'desktop' ? 'flex-row' : 'flex-col'}`}>
           {/* Left Panel - Form Editor */}
           <div className={`${viewMode === 'desktop' ? 'w-[480px] shrink-0' : 'w-full'} space-y-4 ${viewMode === 'mobile' && showPreview ? 'hidden' : ''}`}>
-            {sections.map(({ key, component }) => (
-              <div key={key} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <button
-                  onClick={() => toggleSection(key)}
-                  className="w-full px-5 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer"
-                >
-                  <span className="text-sm font-medium text-slate-700">
-                    {key === 'template' && 'Pilih Template CV'}
-                    {key === 'personal' && 'Data Pribadi'}
-                    {key === 'experience' && 'Pengalaman Kerja'}
-                    {key === 'education' && 'Pendidikan'}
-                    {key === 'projects' && 'Proyek'}
-                    {key === 'skills' && 'Keahlian'}
-                  </span>
-                  {expandedSections[key] ? (
-                    <ChevronUp className="w-4 h-4 text-slate-400" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 text-slate-400" />
+            {activeTab === 'cv' ? (
+              sections.map(({ key, component }) => (
+                <div key={key} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                  <button
+                    onClick={() => toggleSection(key)}
+                    className="w-full px-5 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer"
+                  >
+                    <span className="text-sm font-medium text-slate-700">
+                      {key === 'template' && 'Pilih Template CV'}
+                      {key === 'personal' && 'Data Pribadi'}
+                      {key === 'experience' && 'Pengalaman Kerja'}
+                      {key === 'education' && 'Pendidikan'}
+                      {key === 'projects' && 'Proyek'}
+                      {key === 'skills' && 'Keahlian'}
+                    </span>
+                    {expandedSections[key] ? (
+                      <ChevronUp className="w-4 h-4 text-slate-400" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-slate-400" />
+                    )}
+                  </button>
+                  {expandedSections[key] && (
+                    <div className="px-5 pb-5">
+                      {component}
+                    </div>
                   )}
-                </button>
-                {expandedSections[key] && (
-                  <div className="px-5 pb-5">
-                    {component}
-                  </div>
-                )}
+                </div>
+              ))
+            ) : (
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden px-5 py-5">
+                <CoverLetterForm />
               </div>
-            ))}
+            )}
 
             {/* Auto-save indicator */}
             <div className="text-center py-2">
@@ -237,10 +296,12 @@ function App() {
                   <Eye className="w-3.5 h-3.5" />
                   Live Preview
                 </h2>
-                <span className="text-[10px] text-slate-400">Format: Harvard ATS-Friendly</span>
+                <span className="text-[10px] text-slate-400">
+                  {activeTab === 'cv' ? 'Format: Harvard ATS-Friendly' : 'Format: Surat Lamaran Standar'}
+                </span>
               </div>
               <div className="overflow-auto rounded-xl shadow-lg" style={{ maxHeight: 'calc(100vh - 140px)' }}>
-                <ResumePreview />
+                {activeTab === 'cv' ? <ResumePreview /> : <CoverLetterPreview />}
               </div>
             </div>
           </div>
