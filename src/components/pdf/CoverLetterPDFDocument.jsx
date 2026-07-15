@@ -29,7 +29,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   dateContainerRight: {
-    alignItems: 'flex-end',
+    alignItems: 'flex-start',
+    marginLeft: 'auto',
+    width: 135,
     marginBottom: 10,
   },
   // Subject & Enclosure row
@@ -118,7 +120,7 @@ const styles = StyleSheet.create({
   closingContainerRight: {
     marginTop: 14,
     marginLeft: 'auto',
-    width: 150,
+    width: 140,
   },
   closingSalutation: {
     marginBottom: 4,

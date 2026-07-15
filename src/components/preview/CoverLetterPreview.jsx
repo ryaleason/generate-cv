@@ -1,5 +1,33 @@
 import useCoverLetterStore from '../../store/useCoverLetterStore'
 
+// Keep these values in PDF points. They intentionally mirror
+// CoverLetterPDFDocument's StyleSheet so the browser preview has the same
+// line breaks, spacing, and column positions as the exported document.
+const pdfLayout = {
+  senderContainer: { textAlign: 'right', marginBottom: '14pt' },
+  senderName: { fontSize: '11pt', fontWeight: 700, color: '#0f172a', marginBottom: '2pt' },
+  senderDetail: { fontSize: '9pt', color: '#334155', lineHeight: 1.3 },
+  date: { marginBottom: '10pt' },
+  meta: { marginBottom: '10pt' },
+  metaRow: { display: 'flex', marginBottom: '2pt' },
+  metaLabel: { width: '60pt', flexShrink: 0 },
+  recipient: { marginBottom: '10pt' },
+  recipientName: { marginBottom: '2pt' },
+  salutation: { marginBottom: '8pt' },
+  paragraph: { textAlign: 'justify', marginBottom: '8pt' },
+  biodata: { marginBottom: '10pt' },
+  biodataRow: { display: 'grid', gridTemplateColumns: '140pt 10pt minmax(0, 1fr)', paddingLeft: '12pt', marginBottom: '2pt' },
+  attachmentList: { marginBottom: '10pt' },
+  attachmentRow: { display: 'flex', paddingLeft: '16pt', marginBottom: '2pt' },
+  attachmentNumber: { width: '16pt', flexShrink: 0 },
+  closingLeft: { marginTop: '14pt' },
+  closingRight: { marginTop: '14pt', marginLeft: 'auto', width: '135pt' },
+  closingSalutation: { marginBottom: '4pt' },
+  signature: { width: '110pt', height: '45pt', objectFit: 'contain', margin: '4pt 0' },
+  signaturePlaceholder: { height: '45pt' },
+  signatureName: { marginTop: '4pt' },
+}
+
 export default function CoverLetterPreview() {
   const { coverLetterInfo } = useCoverLetterStore()
   const {
@@ -105,90 +133,78 @@ export default function CoverLetterPreview() {
         // ================= TEMPLATE KLASIK BIODATA =================
         <div className="flex flex-col h-full">
           {/* Date (Aligned Top Right) */}
-          {letterDate && <div className="text-right mb-4">{letterDate}</div>}
+          {letterDate && <div style={{ ...pdfLayout.date, marginLeft: 'auto', width: '105pt' }}>{letterDate}</div>}
 
           {/* Hal / Perihal (Left Aligned) */}
           {letterSubject && (
-            <div className="mb-4 flex gap-2">
-              <span className="font-bold shrink-0">Hal:</span>
+            <div style={pdfLayout.meta}>
+              <div style={pdfLayout.metaRow}>
+              <span style={{ ...pdfLayout.metaLabel, fontWeight: 700 }}>Hal:</span>
               <span>{letterSubject}</span>
+              </div>
             </div>
           )}
 
           {/* Recipient Details */}
           {(recipientName || recipientAddress) && (
-            <div className="mb-4 leading-normal">
-              {recipientName && <div className={boldRecipientName !== false ? 'font-semibold' : ''}>{renderNewLines(recipientName)}</div>}
+            <div style={pdfLayout.recipient}>
+              {recipientName && <div style={{ ...pdfLayout.recipientName, fontWeight: boldRecipientName !== false ? 700 : 400 }}>{renderNewLines(recipientName)}</div>}
               {recipientAddress && <div>{renderNewLines(recipientAddress)}</div>}
             </div>
           )}
 
           {/* Salutation */}
-          {salutation && <div className="mb-3">{salutation}</div>}
+          {salutation && <div style={pdfLayout.salutation}>{salutation}</div>}
 
           {/* Body Paragraph 1 (Opening) */}
-          {bodyParagraph1 && <p className="text-justify mb-3">{bodyParagraph1}</p>}
+          {bodyParagraph1 && <p style={pdfLayout.paragraph}>{bodyParagraph1}</p>}
 
           {/* Body Paragraph 2 (Intro to Biodata) */}
-          {bodyParagraph2 && <p className="text-justify mb-2">{bodyParagraph2}</p>}
+          {bodyParagraph2 && <p style={pdfLayout.paragraph}>{bodyParagraph2}</p>}
 
           {/* Biodata Block (Colons aligned) */}
           {hasBiodata && (
-            <div className="grid grid-cols-[160px_10px_1fr] gap-x-1 gap-y-0.5 mb-3 pl-4 leading-normal">
+            <div style={pdfLayout.biodata}>
               {senderName && (
-                <>
-                  <div className="text-slate-700">Nama</div>
-                  <div className="text-slate-700">:</div>
-                  <div className={`text-slate-900 ${boldSenderName !== false ? 'font-bold' : ''}`}>{senderName}</div>
-                </>
+                <div style={pdfLayout.biodataRow}>
+                  <div style={{ color: '#334155' }}>Nama</div><div style={{ color: '#334155' }}>:</div><div style={{ color: '#0f172a', fontWeight: boldSenderName !== false ? 700 : 400 }}>{senderName}</div>
+                </div>
               )}
 
               {birthPlaceDate && (
-                <>
-                  <div className="text-slate-700">Tempat, Tanggal Lahir</div>
-                  <div className="text-slate-700">:</div>
-                  <div className="text-slate-900">{birthPlaceDate}</div>
-                </>
+                <div style={pdfLayout.biodataRow}>
+                  <div style={{ color: '#334155' }}>Tempat, Tanggal Lahir</div><div style={{ color: '#334155' }}>:</div><div style={{ color: '#0f172a' }}>{birthPlaceDate}</div>
+                </div>
               )}
 
               {gender && (
-                <>
-                  <div className="text-slate-700">Jenis Kelamin</div>
-                  <div className="text-slate-700">:</div>
-                  <div className="text-slate-900">{gender}</div>
-                </>
+                <div style={pdfLayout.biodataRow}>
+                  <div style={{ color: '#334155' }}>Jenis Kelamin</div><div style={{ color: '#334155' }}>:</div><div style={{ color: '#0f172a' }}>{gender}</div>
+                </div>
               )}
 
               {senderAddress && (
-                <>
-                  <div className="text-slate-700">Alamat</div>
-                  <div className="text-slate-700">:</div>
-                  <div className="text-slate-900">{senderAddress}</div>
-                </>
+                <div style={pdfLayout.biodataRow}>
+                  <div style={{ color: '#334155' }}>Alamat</div><div style={{ color: '#334155' }}>:</div><div style={{ color: '#0f172a' }}>{senderAddress}</div>
+                </div>
               )}
 
               {lastEducation && (
-                <>
-                  <div className="text-slate-700">Pendidikan Terakhir</div>
-                  <div className="text-slate-700">:</div>
-                  <div className="text-slate-900">{lastEducation}</div>
-                </>
+                <div style={pdfLayout.biodataRow}>
+                  <div style={{ color: '#334155' }}>Pendidikan Terakhir</div><div style={{ color: '#334155' }}>:</div><div style={{ color: '#0f172a' }}>{lastEducation}</div>
+                </div>
               )}
 
               {senderPhone && (
-                <>
-                  <div className="text-slate-700">Nomor Handphone</div>
-                  <div className="text-slate-700">:</div>
-                  <div className="text-slate-900">{senderPhone}</div>
-                </>
+                <div style={pdfLayout.biodataRow}>
+                  <div style={{ color: '#334155' }}>Nomor Handphone</div><div style={{ color: '#334155' }}>:</div><div style={{ color: '#0f172a' }}>{senderPhone}</div>
+                </div>
               )}
 
               {senderEmail && (
-                <>
-                  <div className="text-slate-700">Email</div>
-                  <div className="text-slate-700">:</div>
-                  <div className="text-slate-900">{senderEmail}</div>
-                </>
+                <div style={pdfLayout.biodataRow}>
+                  <div style={{ color: '#334155' }}>Email</div><div style={{ color: '#334155' }}>:</div><div style={{ color: '#0f172a' }}>{senderEmail}</div>
+                </div>
               )}
             </div>
           )}
@@ -196,69 +212,68 @@ export default function CoverLetterPreview() {
           {/* Transition text before Attachments */}
           {attachmentList.length > 0 && (
             <>
-              <p className="mb-2 text-justify">
+              <p style={pdfLayout.paragraph}>
                 Untuk melengkapi beberapa data yang diperlukan sebagai persyaratan administrasi dan juga sebagai bahan pertimbangan Bapak/Ibu, saya lampirkan juga kelengkapan data diri sebagai berikut :
               </p>
 
               {/* Attachments List */}
-              <ol className="list-decimal pl-6 mb-3 space-y-0.5">
+              <div style={pdfLayout.attachmentList}>
                 {attachmentList.map((item, idx) => (
-                  <li key={idx} className="text-slate-800">
-                    {item}
-                  </li>
+                  <div key={idx} style={pdfLayout.attachmentRow}>
+                    <span style={{ ...pdfLayout.attachmentNumber, color: '#334155' }}>{idx + 1}.</span><span style={{ color: '#334155' }}>{item}</span>
+                  </div>
                 ))}
-              </ol>
+              </div>
             </>
           )}
 
           {/* Body Paragraph 3 (Closing sentence) */}
-          {bodyParagraph3 && <p className="text-justify mb-4">{bodyParagraph3}</p>}
+          {bodyParagraph3 && <p style={pdfLayout.paragraph}>{bodyParagraph3}</p>}
 
           {/* Closing & Signature (Bottom Right Aligned) */}
-          <div className="mt-4 ml-auto text-left w-[150px]">
-            {closingSalutation && <p className="mb-1">{closingSalutation}</p>}
+          <div style={pdfLayout.closingRight} style={{ marginLeft: 'auto', width: '110pt'}}>
+            {closingSalutation && <p style={pdfLayout.closingSalutation}>{closingSalutation}</p>}
             
             {showSignature && signatureImage ? (
-              <div className="my-1.5 h-[50px] flex items-center justify-start">
+              <div style={{ ...pdfLayout.signature, display: 'flex', alignItems: 'center' }}>
                 <img
                   src={signatureImage}
                   alt="Signature"
-                  className="max-h-[45px] max-w-[140px] object-contain"
-                  style={{ mixBlendMode: 'multiply' }}
+                  style={pdfLayout.signature}
                 />
               </div>
             ) : (
-              <div className="h-[50px]" />
+              <div style={pdfLayout.signaturePlaceholder} />
             )}
 
-            {senderName && <p className={`${boldSenderName !== false ? 'font-bold' : ''} ${underlineSenderName ? 'underline' : ''}`}>({senderName})</p>}
+            {senderName && <p style={{ ...pdfLayout.signatureName, fontWeight: boldSenderName !== false ? 700 : 400, textDecoration: underlineSenderName ? 'underline' : 'none' }}>({senderName})</p>}
           </div>
         </div>
       ) : (
         // ================= TEMPLATE MODERN/BLOCK STYLE =================
         <div className="flex flex-col h-full">
           {/* Header / Sender Info (Aligned Top Right) */}
-          <div className="text-right mb-6">
-            {senderName && <h1 className="text-sm font-bold text-slate-900 mb-0.5">{senderName}</h1>}
-            {senderAddress && <p className="text-slate-700 text-xs leading-relaxed">{senderAddress}</p>}
-            {senderPhone && <p className="text-slate-700 text-xs leading-relaxed">{senderPhone}</p>}
-            {senderEmail && <p className="text-slate-700 text-xs leading-relaxed">{senderEmail}</p>}
+          <div style={pdfLayout.senderContainer}>
+            {senderName && <h1 style={pdfLayout.senderName}>{senderName}</h1>}
+            {senderAddress && <p style={pdfLayout.senderDetail}>{senderAddress}</p>}
+            {senderPhone && <p style={pdfLayout.senderDetail}>{senderPhone}</p>}
+            {senderEmail && <p style={pdfLayout.senderDetail}>{senderEmail}</p>}
           </div>
 
           {/* Date (Left Aligned) */}
-          {letterDate && <div className="mb-4">{letterDate}</div>}
+          {letterDate && <div style={pdfLayout.date}>{letterDate}</div>}
 
           {/* Subject & Enclosure (Left Aligned) */}
-          <div className="mb-4">
+          <div style={pdfLayout.meta}>
             {letterSubject && (
-              <div className="flex gap-2">
-                <span className="w-20 font-bold shrink-0">Perihal:</span>
-                <span className="font-bold">{letterSubject}</span>
+              <div style={pdfLayout.metaRow}>
+                <span style={{ ...pdfLayout.metaLabel, fontWeight: 700 }}>Perihal:</span>
+                <span style={{ fontWeight: 700 }}>{letterSubject}</span>
               </div>
             )}
             {letterEnclosure && (
-              <div className="flex gap-2">
-                <span className="w-20 shrink-0">Lampiran:</span>
+              <div style={pdfLayout.metaRow}>
+                <span style={pdfLayout.metaLabel}>Lampiran:</span>
                 <span>{letterEnclosure}</span>
               </div>
             )}
@@ -266,40 +281,37 @@ export default function CoverLetterPreview() {
 
           {/* Recipient Details */}
           {(recipientName || recipientAddress) && (
-            <div className="mb-4 leading-normal">
-              {recipientName && <div className={boldRecipientName !== false ? 'font-semibold' : ''}>{renderNewLines(recipientName)}</div>}
+            <div style={pdfLayout.recipient}>
+              {recipientName && <div style={{ ...pdfLayout.recipientName, fontWeight: boldRecipientName !== false ? 700 : 400 }}>{renderNewLines(recipientName)}</div>}
               {recipientAddress && <div>{renderNewLines(recipientAddress)}</div>}
             </div>
           )}
 
           {/* Salutation */}
-          {salutation && <div className="mb-3">{salutation}</div>}
+          {salutation && <div style={pdfLayout.salutation}>{salutation}</div>}
 
           {/* Body Paragraphs */}
-          <div className="space-y-3 mb-6 text-justify">
-            {bodyParagraph1 && <p>{bodyParagraph1}</p>}
-            {bodyParagraph2 && <p>{bodyParagraph2}</p>}
-            {bodyParagraph3 && <p>{bodyParagraph3}</p>}
-          </div>
+          {bodyParagraph1 && <p style={pdfLayout.paragraph}>{bodyParagraph1}</p>}
+          {bodyParagraph2 && <p style={pdfLayout.paragraph}>{bodyParagraph2}</p>}
+          {bodyParagraph3 && <p style={pdfLayout.paragraph}>{bodyParagraph3}</p>}
 
           {/* Closing & Signature */}
-          <div className="mt-4 pt-2">
-            {closingSalutation && <p className="mb-1">{closingSalutation}</p>}
+          <div style={pdfLayout.closingLeft}>
+            {closingSalutation && <p style={pdfLayout.closingSalutation}>{closingSalutation}</p>}
             
             {showSignature && signatureImage ? (
-              <div className="my-1.5 h-[50px] flex items-center justify-start">
+              <div style={{ ...pdfLayout.signature, display: 'flex', alignItems: 'center' }}>
                 <img
                   src={signatureImage}
                   alt="Signature"
-                  className="max-h-[45px] max-w-[140px] object-contain"
-                  style={{ mixBlendMode: 'multiply' }}
+                  style={pdfLayout.signature}
                 />
               </div>
             ) : (
-              <div className="h-[50px]" />
+              <div style={pdfLayout.signaturePlaceholder} />
             )}
 
-            {senderName && <p className={`${boldSenderName !== false ? 'font-bold' : ''} ${underlineSenderName ? 'underline' : ''}`}>{senderName}</p>}
+            {senderName && <p style={{ ...pdfLayout.signatureName, fontWeight: boldSenderName !== false ? 700 : 400, textDecoration: underlineSenderName ? 'underline' : 'none' }}>{senderName}</p>}
           </div>
         </div>
       )}
