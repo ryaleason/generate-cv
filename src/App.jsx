@@ -51,8 +51,8 @@ function App() {
   const [showDesktopSiteGuide, setShowDesktopSiteGuide] = useState(() => {
     if (typeof window === 'undefined') return false
 
-    const isChromeAndroid = /Android/i.test(navigator.userAgent) && /Chrome/i.test(navigator.userAgent) && !/Edg|OPR/i.test(navigator.userAgent)
-    return isChromeAndroid && !window.localStorage.getItem('desktop-site-guide-dismissed')
+    return /Android|iPhone|iPod/i.test(navigator.userAgent) ||
+      (navigator.maxTouchPoints > 0 && Math.min(window.screen.width, window.screen.height) <= 768)
   })
   const [expandedSections, setExpandedSections] = useState({
     template: true,
@@ -68,8 +68,12 @@ function App() {
   }
 
   const closeDesktopSiteGuide = () => {
-    window.localStorage.setItem('desktop-site-guide-dismissed', 'true')
     setShowDesktopSiteGuide(false)
+  }
+
+  const openDesktopSiteGuide = () => {
+    setShowViewMenu(false)
+    setShowDesktopSiteGuide(true)
   }
 
   const handleExportPDF = useCallback(async () => {
@@ -238,6 +242,15 @@ function App() {
                   )}
 
                   <div className="my-1 border-t border-slate-100" />
+                  <button
+                    type="button"
+                    onClick={openDesktopSiteGuide}
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                    role="menuitem"
+                  >
+                    <Monitor className="w-3.5 h-3.5" />
+                    Panduan Chrome Desktop
+                  </button>
                   <button
                     type="button"
                     onClick={() => {
