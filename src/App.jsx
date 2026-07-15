@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { pdf } from '@react-pdf/renderer'
 import { Analytics } from '@vercel/analytics/react'
-import { FileDown, RotateCcw, ChevronDown, ChevronUp, Eye, EyeOff, Globe, Monitor, Smartphone, X } from 'lucide-react'
+import { FileDown, RotateCcw, ChevronDown, ChevronUp, Eye, EyeOff, Globe, Monitor, Smartphone, X, Menu } from 'lucide-react'
 import PersonalInfoForm from './components/form/PersonalInfoForm'
 import ExperienceForm from './components/form/ExperienceForm'
 import EducationForm from './components/form/EducationForm'
@@ -47,6 +47,7 @@ function App() {
       : 'desktop'
   })
   const [showPreview, setShowPreview] = useState(false)
+  const [showViewMenu, setShowViewMenu] = useState(false)
   const [showDesktopSiteGuide, setShowDesktopSiteGuide] = useState(() => {
     if (typeof window === 'undefined') return false
 
@@ -149,7 +150,7 @@ function App() {
                   setActiveTab('cv')
                   setShowPreview(false)
                 }}
-                className={`px-2.5 py-1.5 text-[11px] sm:text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+                className={`whitespace-nowrap px-2.5 py-1.5 text-[11px] sm:text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
                   activeTab === 'cv'
                     ? 'bg-slate-100 text-slate-800'
                     : 'text-slate-500 hover:text-slate-800'
@@ -162,7 +163,7 @@ function App() {
                   setActiveTab('cover-letter')
                   setShowPreview(false)
                 }}
-                className={`px-2.5 py-1.5 text-[11px] sm:text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+                className={`whitespace-nowrap px-2.5 py-1.5 text-[11px] sm:text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
                   activeTab === 'cover-letter'
                     ? 'bg-slate-100 text-slate-800'
                     : 'text-slate-500 hover:text-slate-800'
@@ -174,39 +175,103 @@ function App() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="lg:hidden flex items-center rounded-lg bg-slate-100 p-0.5">
+            <div className="relative lg:hidden">
               <button
                 type="button"
-                onClick={() => setViewMode('desktop')}
-                aria-pressed={viewMode === 'desktop'}
-                className={`flex items-center gap-1 px-2 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-                  viewMode === 'desktop' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500'
-                }`}
+                onClick={() => setShowViewMenu((current) => !current)}
+                aria-expanded={showViewMenu}
+                aria-haspopup="menu"
+                className="flex items-center gap-1.5 rounded-lg bg-slate-100 px-2 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-200 transition-colors cursor-pointer"
               >
-                <Monitor className="w-3.5 h-3.5" />
-                Desktop
+                <Menu className="w-4 h-4" />
+                <span className="hidden sm:inline">Menu</span>
               </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setViewMode('mobile')
-                  setShowPreview(false)
-                }}
-                aria-pressed={viewMode === 'mobile'}
-                className={`flex items-center gap-1 px-2 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-                  viewMode === 'mobile' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500'
-                }`}
-              >
-                <Smartphone className="w-3.5 h-3.5" />
-                Mobile
-              </button>
+
+              {showViewMenu && (
+                <div className="absolute right-0 top-full z-50 mt-2 w-52 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg" role="menu">
+                  <p className="px-3 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Tampilan</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setViewMode('desktop')
+                      setShowViewMenu(false)
+                    }}
+                    aria-pressed={viewMode === 'desktop'}
+                    className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-medium transition-colors cursor-pointer ${
+                      viewMode === 'desktop' ? 'bg-slate-100 text-slate-800' : 'text-slate-500 hover:bg-slate-50'
+                    }`}
+                    role="menuitem"
+                  >
+                    <Monitor className="w-3.5 h-3.5" />
+                    Desktop
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setViewMode('mobile')
+                      setShowPreview(false)
+                      setShowViewMenu(false)
+                    }}
+                    aria-pressed={viewMode === 'mobile'}
+                    className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-medium transition-colors cursor-pointer ${
+                      viewMode === 'mobile' ? 'bg-slate-100 text-slate-800' : 'text-slate-500 hover:bg-slate-50'
+                    }`}
+                    role="menuitem"
+                  >
+                    <Smartphone className="w-3.5 h-3.5" />
+                    Mobile
+                  </button>
+
+                  {viewMode === 'mobile' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowPreview((current) => !current)
+                        setShowViewMenu(false)
+                      }}
+                      className="mt-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                      role="menuitem"
+                    >
+                      {showPreview ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      {showPreview ? 'Tampilkan Editor' : 'Tampilkan Preview'}
+                    </button>
+                  )}
+
+                  <div className="my-1 border-t border-slate-100" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleReset()
+                      setShowViewMenu(false)
+                    }}
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-medium text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                    role="menuitem"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    Reset data
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleExportPDF()
+                      setShowViewMenu(false)
+                    }}
+                    disabled={exporting}
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 transition-colors cursor-pointer"
+                    role="menuitem"
+                  >
+                    <FileDown className="w-3.5 h-3.5" />
+                    {exporting ? 'Mengekspor...' : 'Export PDF'}
+                  </button>
+                </div>
+              )}
             </div>
 
             {viewMode === 'mobile' && (
               <button
                 type="button"
                 onClick={() => setShowPreview((current) => !current)}
-                className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
+                className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
               >
                 {showPreview ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 {showPreview ? 'Editor' : 'Preview'}
@@ -215,7 +280,7 @@ function App() {
 
             <button
               onClick={handleReset}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors cursor-pointer"
+              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Reset</span>
@@ -224,7 +289,7 @@ function App() {
             <button
               onClick={handleExportPDF}
               disabled={exporting}
-              className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-medium text-white bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors shadow-sm cursor-pointer"
+              className="hidden lg:flex items-center gap-1.5 px-4 py-1.5 text-xs font-medium text-white bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors shadow-sm cursor-pointer"
             >
               <FileDown className="w-3.5 h-3.5" />
               {exporting ? 'Mengekspor...' : 'Export PDF'}
