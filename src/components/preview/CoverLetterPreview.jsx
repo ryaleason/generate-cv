@@ -22,8 +22,8 @@ const pdfLayout = {
   attachmentNumber: { width: '16pt', flexShrink: 0 },
   closingLeft: { marginTop: '14pt' },
   closingRight: { marginTop: '14pt', marginLeft: 'auto', width: '135pt' },
-  closingSalutation: { marginBottom: '4pt' },
-  signature: { width: '110pt', height: '45pt', objectFit: 'contain', margin: '4pt 0' },
+  closingSalutation: { marginBottom: '4pt', marginTop: '5pt' },
+  signature: { width: '63pt', height: '60pt', objectFit: 'contain', margin: '3pt 0' },
   signaturePlaceholder: { height: '45pt' },
   signatureName: { marginTop: '4pt' },
 }
@@ -301,7 +301,7 @@ export default function CoverLetterPreview() {
             
             {showSignature && signatureImage ? (
               <div style={{ ...pdfLayout.signature, display: 'flex', alignItems: 'center' }}>
-                <img
+                <img 
                   src={signatureImage}
                   alt="Signature"
                   style={pdfLayout.signature}

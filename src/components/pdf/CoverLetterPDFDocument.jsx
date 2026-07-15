@@ -123,13 +123,14 @@ const styles = StyleSheet.create({
     width: 140,
   },
   closingSalutation: {
-    marginBottom: 4,
+    marginBottom: 3,
+    marginTop: 5,
   },
   signatureImage: {
-    width: 110,
-    height: 45,
+    width: 68,
+    height: 60,
     objectFit: 'contain',
-    marginVertical: 4,
+    marginVertical: 2,
   },
   signaturePlaceholder: {
     height: 45,
