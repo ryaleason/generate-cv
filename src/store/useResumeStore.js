@@ -53,6 +53,15 @@ const initialState = {
     { id: crypto.randomUUID(), category: 'Technical Skills', items: '' },
     { id: crypto.randomUUID(), category: 'Soft Skills', items: '' },
   ],
+  achievements: [
+    {
+      id: crypto.randomUUID(),
+      title: '',
+      issuer: '',
+      date: '',
+      description: '',
+    },
+  ],
 }
 
 const useResumeStore = create(
@@ -169,6 +178,31 @@ const useResumeStore = create(
       removeSkillCategory: (id) =>
         set((state) => ({
           skills: state.skills.filter((skill) => skill.id !== id),
+        })),
+
+      // Achievements
+      addAchievement: () =>
+        set((state) => ({
+          achievements: [
+            ...(state.achievements || []),
+            {
+              id: crypto.randomUUID(),
+              title: '',
+              issuer: '',
+              date: '',
+              description: '',
+            },
+          ],
+        })),
+      updateAchievement: (id, field, value) =>
+        set((state) => ({
+          achievements: (state.achievements || []).map((ach) =>
+            ach.id === id ? { ...ach, [field]: value } : ach
+          ),
+        })),
+      removeAchievement: (id) =>
+        set((state) => ({
+          achievements: (state.achievements || []).filter((ach) => ach.id !== id),
         })),
 
       // Reset

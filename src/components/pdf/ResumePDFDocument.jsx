@@ -141,6 +141,7 @@ const sectionLabels = {
     education: 'Education',
     projects: 'Projects',
     skills: 'Skills',
+    achievements: 'Achievements & Awards',
   },
   id: {
     summary: 'Ringkasan Profil',
@@ -148,11 +149,12 @@ const sectionLabels = {
     education: 'Pendidikan',
     projects: 'Proyek',
     skills: 'Keahlian',
+    achievements: 'Prestasi & Penghargaan',
   },
 }
 
 export default function ResumePDFDocument({ data }) {
-  const { personalInfo, experiences, educations, projects = [], skills } = data
+  const { personalInfo, experiences, educations, projects = [], skills, achievements = [] } = data
   const template = personalInfo.template || 'classic'
   const photoShape = personalInfo.photoShape || 'circle'
   const labels = sectionLabels[personalInfo.language || 'en']
@@ -257,6 +259,25 @@ export default function ResumePDFDocument({ data }) {
                 {project.description && project.description.split('\n').filter(line => line.trim()).map((line, i) => (
                   <View key={i} style={styles.bulletItem}><Text style={styles.bullet}>•</Text><Text style={styles.bulletText}>{line.trim()}</Text></View>
                 ))}
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Achievements */}
+        {achievements.some(ach => ach.title) && (
+          <View>
+            <Text style={[styles.sectionTitle, { color: accentColor, borderBottomColor: accentColor }]}>{labels.achievements}</Text>
+            {achievements.filter(ach => ach.title).map((ach) => (
+              <View key={ach.id} style={styles.entryContainer}>
+                <View style={styles.entryHeader}>
+                  <View style={{ flexDirection: 'row', flex: 1 }}>
+                    <Text style={styles.entryTitle}>{ach.title}</Text>
+                    {ach.issuer && <Text style={styles.entryDetail}> — {ach.issuer}</Text>}
+                  </View>
+                  <Text style={styles.entryDate}>{formatDate(ach.date)}</Text>
+                </View>
+                {ach.description && <Text style={styles.entryDetail}>{ach.description}</Text>}
               </View>
             ))}
           </View>

@@ -8,6 +8,7 @@ import EducationForm from './components/form/EducationForm'
 import ProjectForm from './components/form/ProjectForm'
 import SkillsForm from './components/form/SkillsForm'
 import TemplateForm from './components/form/TemplateForm'
+import AchievementsForm from './components/form/AchievementsForm'
 import ResumePreview from './components/preview/ResumePreview'
 import ResumePDFDocument from './components/pdf/ResumePDFDocument'
 import useResumeStore from './store/useResumeStore'
@@ -61,6 +62,7 @@ function App() {
     education: true,
     projects: true,
     skills: true,
+    achievements: true,
   })
 
   const toggleSection = (section) => {
@@ -87,6 +89,7 @@ function App() {
           educations: currentStore.educations,
           projects: currentStore.projects,
           skills: currentStore.skills,
+          achievements: currentStore.achievements,
         }
         const blob = await pdf(<ResumePDFDocument data={data} />).toBlob()
         const url = URL.createObjectURL(blob)
@@ -135,6 +138,7 @@ function App() {
     { key: 'education', component: <EducationForm /> },
     { key: 'projects', component: <ProjectForm /> },
     { key: 'skills', component: <SkillsForm /> },
+    { key: 'achievements', component: <AchievementsForm /> },
   ]
 
   return (
@@ -360,6 +364,7 @@ function App() {
                       {key === 'education' && 'Pendidikan'}
                       {key === 'projects' && 'Proyek'}
                       {key === 'skills' && 'Keahlian'}
+                      {key === 'achievements' && 'Prestasi & Penghargaan'}
                     </span>
                     {expandedSections[key] ? (
                       <ChevronUp className="w-4 h-4 text-slate-400" />

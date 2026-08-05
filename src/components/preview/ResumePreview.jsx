@@ -14,6 +14,7 @@ const sectionLabels = {
     education: 'Education',
     projects: 'Projects',
     skills: 'Skills',
+    achievements: 'Achievements & Awards',
   },
   id: {
     summary: 'Ringkasan Profil',
@@ -21,11 +22,12 @@ const sectionLabels = {
     education: 'Pendidikan',
     projects: 'Proyek',
     skills: 'Keahlian',
+    achievements: 'Prestasi & Penghargaan',
   },
 }
 
 export default function ResumePreview() {
-  const { personalInfo, experiences, educations, projects = [], skills } = useResumeStore()
+  const { personalInfo, experiences, educations, projects = [], skills, achievements = [] } = useResumeStore()
   const template = personalInfo.template || 'classic'
   const photoShape = personalInfo.photoShape || 'circle'
   const labels = sectionLabels[personalInfo.language || 'en']
@@ -40,7 +42,8 @@ export default function ResumePreview() {
     experiences.some(e => e.company || e.position) ||
     educations.some(e => e.institution || e.degree) ||
     projects.some(project => project.name) ||
-    skills.some(s => s.items)
+    skills.some(s => s.items) ||
+    achievements.some(a => a.title)
 
   return (
     <div className="resume-preview bg-white shadow-lg border border-slate-200 mx-auto" style={{ width: '210mm', minHeight: '297mm', maxWidth: '100%', padding: '20mm 18mm', fontFamily: 'Georgia, "Times New Roman", serif' }}>
@@ -169,6 +172,33 @@ export default function ResumePreview() {
                     <ul style={{ margin: '4px 0 0 0', paddingLeft: '18px', fontSize: '9.5pt', lineHeight: '1.5', color: '#334155' }}>
                       {project.description.split('\n').filter(line => line.trim()).map((line, i) => <li key={i} style={{ marginBottom: '2px' }}>{line.trim()}</li>)}
                     </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Achievements */}
+          {achievements.some(ach => ach.title) && (
+            <div style={{ marginTop: '14px' }}>
+              <h2 style={{ fontSize: '11pt', fontWeight: 'bold', color: accentColor, textTransform: 'uppercase', letterSpacing: '1.5px', borderBottom: `1px solid ${accentColor}`, paddingBottom: '3px', marginBottom: '8px' }}>
+                {labels.achievements}
+              </h2>
+              {achievements.filter(ach => ach.title).map((ach) => (
+                <div key={ach.id} style={{ marginBottom: '8px' }}>
+                  <div className="flex justify-between items-baseline">
+                    <div>
+                      <span style={{ fontSize: '10.5pt', fontWeight: 'bold', color: '#1e293b' }}>{ach.title}</span>
+                      {ach.issuer && <span style={{ fontSize: '9.5pt', color: '#475569' }}> — {ach.issuer}</span>}
+                    </div>
+                    <span style={{ fontSize: '9pt', color: '#64748b', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                      {formatDate(ach.date)}
+                    </span>
+                  </div>
+                  {ach.description && (
+                    <p style={{ margin: '2px 0 0 0', fontSize: '9.5pt', lineHeight: '1.5', color: '#334155' }}>
+                      {ach.description}
+                    </p>
                   )}
                 </div>
               ))}
