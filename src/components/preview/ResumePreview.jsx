@@ -108,9 +108,9 @@ export default function ResumePreview() {
               {experiences.filter(e => e.company || e.position).map((exp) => (
                 <div key={exp.id} style={{ marginBottom: '10px' }}>
                   <div className="flex justify-between items-baseline">
-                    <div>
+                    <div style={{ flex: 1, minWidth: 0, marginRight: '16px' }}>
                       <span style={{ fontSize: '10.5pt', fontWeight: 'bold', color: '#1e293b' }}>{exp.position}</span>
-                      {exp.company && <span style={{ fontSize: '10.5pt', color: '#1e293b' }}> — {exp.company}</span>}
+                      {exp.company && <span style={{ fontSize: '10.5pt', color: '#1e293b' }}> – {exp.company}</span>}
                     </div>
                     <span style={{ fontSize: '9pt', color: '#64748b', whiteSpace: 'nowrap', flexShrink: 0 }}>
                       {formatDate(exp.startDate)}{exp.startDate && ' – '}{exp.current ? 'Sekarang' : formatDate(exp.endDate)}
@@ -137,7 +137,7 @@ export default function ResumePreview() {
               {educations.filter(e => e.institution || e.degree).map((edu) => (
                 <div key={edu.id} style={{ marginBottom: '8px' }}>
                   <div className="flex justify-between items-baseline">
-                    <div>
+                    <div style={{ flex: 1, minWidth: 0, marginRight: '16px' }}>
                       <span style={{ fontSize: '10.5pt', fontWeight: 'bold', color: '#1e293b' }}>{edu.institution}</span>
                     </div>
                     <span style={{ fontSize: '9pt', color: '#64748b', whiteSpace: 'nowrap', flexShrink: 0 }}>
@@ -145,7 +145,7 @@ export default function ResumePreview() {
                     </span>
                   </div>
                   <div style={{ fontSize: '9.5pt', color: '#334155' }}>
-                    {edu.degree}{edu.field && `, ${edu.field}`}{edu.gpa && ` — IPK: ${edu.gpa}`}
+                    {edu.degree}{edu.field && `, ${edu.field}`}{edu.gpa && ` – IPK: ${edu.gpa}`}
                   </div>
                 </div>
               ))}
@@ -161,7 +161,7 @@ export default function ResumePreview() {
               {projects.filter(project => project.name).map((project) => (
                 <div key={project.id} style={{ marginBottom: '10px' }}>
                   <div className="flex justify-between items-baseline">
-                    <div>
+                    <div style={{ flex: 1, minWidth: 0, marginRight: '16px' }}>
                       <span style={{ fontSize: '10.5pt', fontWeight: 'bold', color: '#1e293b' }}>{project.name}</span>
                       {project.technologies && <span style={{ fontSize: '9.5pt', color: '#475569' }}> · {project.technologies}</span>}
                       {project.link && <span style={{ fontSize: '9pt', color: '#64748b' }}> · {project.link}</span>}
@@ -187,9 +187,9 @@ export default function ResumePreview() {
               {achievements.filter(ach => ach.title).map((ach) => (
                 <div key={ach.id} style={{ marginBottom: '8px' }}>
                   <div className="flex justify-between items-baseline">
-                    <div>
+                    <div style={{ flex: 1, minWidth: 0, marginRight: '16px' }}>
                       <span style={{ fontSize: '10.5pt', fontWeight: 'bold', color: '#1e293b' }}>{ach.title}</span>
-                      {ach.issuer && <span style={{ fontSize: '9.5pt', color: '#475569' }}> — {ach.issuer}</span>}
+                      {ach.issuer && <span style={{ fontSize: '9.5pt', color: '#475569' }}> – {ach.issuer}</span>}
                     </div>
                     <span style={{ fontSize: '9pt', color: '#64748b', whiteSpace: 'nowrap', flexShrink: 0 }}>
                       {formatDate(ach.date)}

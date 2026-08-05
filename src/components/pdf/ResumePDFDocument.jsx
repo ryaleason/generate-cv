@@ -203,10 +203,10 @@ export default function ResumePDFDocument({ data }) {
             {experiences.filter(e => e.company || e.position).map((exp) => (
               <View key={exp.id} style={styles.entryContainer}>
                 <View style={styles.entryHeader}>
-                  <View style={{ flexDirection: 'row', flex: 1 }}>
+                  <Text style={{ flex: 1, marginRight: 10 }}>
                     <Text style={styles.entryTitle}>{exp.position}</Text>
-                    {exp.company && <Text style={styles.entrySubtitle}> — {exp.company}</Text>}
-                  </View>
+                    {exp.company && <Text style={styles.entrySubtitle}> – {exp.company}</Text>}
+                  </Text>
                   <Text style={styles.entryDate}>
                     {formatDate(exp.startDate)}{exp.startDate ? ' – ' : ''}{exp.current ? 'Sekarang' : formatDate(exp.endDate)}
                   </Text>
@@ -229,13 +229,13 @@ export default function ResumePDFDocument({ data }) {
             {educations.filter(e => e.institution || e.degree).map((edu) => (
               <View key={edu.id} style={styles.entryContainer}>
                 <View style={styles.entryHeader}>
-                  <Text style={styles.entryTitle}>{edu.institution}</Text>
+                  <Text style={[styles.entryTitle, { flex: 1, marginRight: 10 }]}>{edu.institution}</Text>
                   <Text style={styles.entryDate}>
                     {formatDate(edu.startDate)}{edu.startDate ? ' – ' : ''}{formatDate(edu.endDate)}
                   </Text>
                 </View>
                 <Text style={styles.entryDetail}>
-                  {edu.degree}{edu.field ? `, ${edu.field}` : ''}{edu.gpa ? ` — IPK: ${edu.gpa}` : ''}
+                  {edu.degree}{edu.field ? `, ${edu.field}` : ''}{edu.gpa ? ` – IPK: ${edu.gpa}` : ''}
                 </Text>
               </View>
             ))}
@@ -249,10 +249,10 @@ export default function ResumePDFDocument({ data }) {
             {projects.filter(project => project.name).map((project) => (
               <View key={project.id} style={styles.entryContainer}>
                 <View style={styles.entryHeader}>
-                  <View style={{ flexDirection: 'row', flex: 1 }}>
+                  <Text style={{ flex: 1, marginRight: 10 }}>
                     <Text style={styles.entryTitle}>{project.name}</Text>
-                    {project.technologies && <Text style={styles.entryDetail}> · {project.technologies}</Text>}
-                  </View>
+                    {project.technologies && <Text style={{ fontSize: 9.5, color: '#475569' }}> · {project.technologies}</Text>}
+                  </Text>
                   <Text style={styles.entryDate}>{formatDate(project.startDate)}{project.startDate && project.endDate ? ' – ' : ''}{formatDate(project.endDate)}</Text>
                 </View>
                 {project.link && <Text style={styles.entryDetail}>{project.link}</Text>}
@@ -271,10 +271,10 @@ export default function ResumePDFDocument({ data }) {
             {achievements.filter(ach => ach.title).map((ach) => (
               <View key={ach.id} style={styles.entryContainer}>
                 <View style={styles.entryHeader}>
-                  <View style={{ flexDirection: 'row', flex: 1 }}>
+                  <Text style={{ flex: 1, marginRight: 10 }}>
                     <Text style={styles.entryTitle}>{ach.title}</Text>
-                    {ach.issuer && <Text style={styles.entryDetail}> — {ach.issuer}</Text>}
-                  </View>
+                    {ach.issuer && <Text style={{ fontSize: 9.5, color: '#475569' }}> – {ach.issuer}</Text>}
+                  </Text>
                   <Text style={styles.entryDate}>{formatDate(ach.date)}</Text>
                 </View>
                 {ach.description && <Text style={styles.entryDetail}>{ach.description}</Text>}
